@@ -66,7 +66,7 @@ def main():
         with st.spinner("Converting to GIF..."):
             gif_bytes = frames_to_gif(frames, duration=duration)
         st.success("Done!")
-        st.image(gif_bytes, format="GIF")
+        st.image(gif_bytes)
         # offer download
         st.download_button(
             label="Download GIF",
