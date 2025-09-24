@@ -7,37 +7,33 @@ from PIL import Image
 import streamlit as st
 
 def make_frames(num_frames=180, elev=60, r_axis=0):
-    """
-    Generate a sequence of PIL Image frames by rotating the view of a 3D surface.
-    """
-    # Create a sample 3D surface (you can change this)
     fig = plt.figure(figsize=(4, 4))
     ax = fig.add_subplot(111, projection='3d')
-    
-    # Example data: e.g. a Gaussian bump
+
     X = np.linspace(-5, 5, 100)
     Y = np.linspace(-5, 5, 100)
     X, Y = np.meshgrid(X, Y)
     Z = np.exp(-0.1 * (X**2 + Y**2))
     ax.set_axis_off()
-    
+
     frames = []
     for i in range(num_frames):
         ax.cla()
         ax.plot_surface(X, Y, Z, cmap='viridis', edgecolor='none')
         ax.set_axis_off()
-        # rotate view: azimuth changes
         azim = (i * r_axis) % 360
         ax.view_init(elev, azim)
-        # save current figure to a buffer
+
         buf = BytesIO()
         fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
         buf.seek(0)
-        im = Image.open(buf)
+        im = Image.open(buf).copy()  # 👈 FIXED
         frames.append(im)
         buf.close()
+
     plt.close(fig)
     return frames
+
 
 def frames_to_gif(frames, duration=100, loop=0):
     """
